@@ -6,5 +6,18 @@ package cn.yejj.yejjrpc.demo.api;
  * @description:
  */
 public interface UserService {
-    public User findById(int id);
+    User findById(int id);
+
+    String findStrById();
+
+    Integer findIntgerById(Integer i);
+
+    long getId(long id);
+
+    int getId(User user);
+
+    String getName();
+
+    String getName(int i);
+
 }

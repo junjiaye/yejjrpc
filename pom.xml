@@ -25,6 +25,7 @@
         <module>yejjrpc-core</module>
         <module>yejjrpc-demo-api</module>
         <module>yejjrpc-demo-provider</module>
+        <module>yejjrpc-demo-consumer</module>
     </modules>
     <dependencies>
 

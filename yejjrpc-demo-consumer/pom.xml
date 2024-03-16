@@ -9,10 +9,10 @@
     </parent>
 
     <groupId>cn.yejj</groupId>
-    <artifactId>yejjrpc-demo-provider</artifactId>
+    <artifactId>yejjrpc-demo-consumer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>yejjrpc-demo-provider</name>
-    <description>yejjrpc-demo-provider</description>
+    <name>yejjrpc-demo-consumer</name>
+    <description>yejjrpc-demo-consumer</description>
     <properties>
         <java.version>17</java.version>
     </properties>
