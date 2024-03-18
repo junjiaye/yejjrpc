@@ -5,6 +5,7 @@ import cn.yejj.yejjrpc.core.api.RpcRequest;
 import cn.yejj.yejjrpc.core.api.RpcResponse;
 import cn.yejj.yejjrpc.core.mate.ProviderMate;
 import cn.yejj.yejjrpc.core.utils.MethodUtils;
+import cn.yejj.yejjrpc.core.utils.TypeUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +41,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
     }
 
     private void genInterface(Object x){
-        Class<?> intf = x.getClass().getInterfaces()[0];
-        Method[] methods = intf.getMethods();
-        for (Method method : methods){
-            if(MethodUtils.checkLocalMethod(method)){
-                continue;
+        Arrays.stream(x.getClass().getInterfaces()).forEach(intf -> {
+            Method[] methods = intf.getMethods();
+            for (Method method : methods){
+                if(MethodUtils.checkLocalMethod(method)){
+                    continue;
+                }
+                createProviderMeta(intf,x,method);
             }
-            createProviderMeta(intf,x,method);
-        }
+        });
     }
 
     private void createProviderMeta(Class<?> intf, Object x, Method method) {
@@ -65,7 +67,8 @@ public class ProviderBootstrap implements ApplicationContextAware {
         try {
             ProviderMate meta = findProviderMate(providerMates,request.getMethodSign());
             Method method =meta.getMethod();
-            Object result = method.invoke(meta.getServiceImpl(), request.getArgs());
+            Object[] args = processArgs(request.getArgs(),method.getParameterTypes());
+            Object result = method.invoke(meta.getServiceImpl(), args);
             rpcResponse.setStatus(true);
             rpcResponse.setResult(result);
         } catch (IllegalAccessException e) {
@@ -77,6 +80,17 @@ public class ProviderBootstrap implements ApplicationContextAware {
         }
         return rpcResponse;
 
+    }
+
+    private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
+        if (args == null || args.length == 0){
+            return args;
+        }
+        Object[] actuals = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            actuals[i] = TypeUtils.cast(args[i],parameterTypes[i]);
+        }
+        return actuals;
     }
 
     private ProviderMate findProviderMate(List<ProviderMate> providerMates,String methodSign) {

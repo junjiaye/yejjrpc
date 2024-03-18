@@ -1,5 +1,7 @@
 package cn.yejj.yejjrpc.demo.api;
 
+import java.util.List;
+
 /**
  * @author: yejjr
  * @since: 2024-03-06
@@ -15,6 +17,14 @@ public interface UserService {
     long getId(long id);
 
     int getId(User user);
+
+    int getId(User user,int i);
+    int getId(int[] ins);
+
+    int getId(List<Integer> list);
+
+
+    int[] getId();
 
     String getName();
 

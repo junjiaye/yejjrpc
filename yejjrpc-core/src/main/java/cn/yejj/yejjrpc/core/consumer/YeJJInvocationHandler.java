@@ -3,11 +3,14 @@ package cn.yejj.yejjrpc.core.consumer;
 import cn.yejj.yejjrpc.core.api.RpcRequest;
 import cn.yejj.yejjrpc.core.api.RpcResponse;
 import cn.yejj.yejjrpc.core.utils.MethodUtils;
+import cn.yejj.yejjrpc.core.utils.TypeUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -34,17 +37,21 @@ public class YeJJInvocationHandler implements InvocationHandler {
         rpcRequest.setArgs(args);
         RpcResponse rpcResponse = post(rpcRequest);
         if (rpcResponse.isStatus()){
-
             Object result = rpcResponse.getResult();
             if(result instanceof JSONObject){
                 JSONObject jsonrResult = (JSONObject) rpcResponse.getResult();
                 return jsonrResult.toJavaObject(method.getReturnType());
+            }else if (result instanceof JSONArray jsonArray){
+                Object[] array = jsonArray.toArray();
+                Class<?> componentType = method.getReturnType().getComponentType();
+                Object resultArray = Array.newInstance(componentType, array.length);
+                for (int i = 0; i < array.length; i++) {
+                    Array.set(resultArray,i,array[i]);
+                }
+                return resultArray;
+            }else{
+                return TypeUtils.cast(result,method.getReturnType());
             }
-            Class<?> returnType = method.getReturnType();
-            if(returnType.isPrimitive()){
-
-            }
-            return result;
 
         }else {
             Exception ex = rpcResponse.getEx();

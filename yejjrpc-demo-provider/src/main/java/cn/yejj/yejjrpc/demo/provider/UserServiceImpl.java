@@ -6,6 +6,8 @@ import cn.yejj.yejjrpc.demo.api.User;
 import cn.yejj.yejjrpc.demo.api.UserService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author: yejjr
  * @since: 2024-03-06
@@ -41,6 +43,26 @@ public class UserServiceImpl extends Parent implements UserService {
     @Override
     public int getId(User user) {
         return 202;
+    }
+
+    @Override
+    public int getId(User user, int i) {
+        return user.getId() + i;
+    }
+
+    @Override
+    public int getId(int[] ins) {
+        return ins[0];
+    }
+
+    @Override
+    public int getId(List<Integer> list) {
+        return list.get(0);
+    }
+
+    @Override
+    public int[] getId() {
+        return new int[]{1,2,3};
     }
 
     @Override
