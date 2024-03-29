@@ -1,6 +1,7 @@
 package cn.yejj.yejjrpc.core.api;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author: yejjr
@@ -8,6 +9,7 @@ import lombok.Data;
  * @description:
  */
 @Data
+@ToString
 public class RpcRequest {
     private String service;
    // private String method;

@@ -1,19 +1,12 @@
 server:
-  port: 8088
+  port: 8081
 yejjrpc:
-  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
   zkServer: 119.3.171.141:2181
   zkRoot: yejjrpc
-spring:
-  application:
-    name: consumer
 app:
   id: app1
   namespace: public
   env: dev
-  retrys: 2
-  timeout: 1000
-
 logging:
   level:
     root: info

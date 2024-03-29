@@ -1,11 +1,16 @@
 package cn.yejj.yejjrpc.core.utils;
 
-import com.alibaba.fastjson.JSON;
+import cn.yejj.yejjrpc.core.api.RpcResponse;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * @program: yejjrpc
@@ -14,6 +19,7 @@ import java.util.List;
  * @author: yejj
  * @create: 2024-03-16 21:38
  */
+@Slf4j
 public class TypeUtils {
 
     public static Object cast(Object origin,Class<?> type){
@@ -61,5 +67,66 @@ public class TypeUtils {
             return Float.valueOf(origin.toString());
         }
         return null;
+    }
+
+    @Nullable
+    public static Object castResult(Method method, Object result, RpcResponse rpcResponse) {
+        Class<?> returnType = method.getReturnType();
+        if(result instanceof JSONObject jsonResult){
+            if (Map.class.isAssignableFrom(returnType)) {
+                Map resultMap = new HashMap();
+                Type genericReturnType = method.getGenericReturnType();
+                log.debug(genericReturnType.toString());
+                if (genericReturnType instanceof ParameterizedType parameterizedType) {
+                    Class<?> keyType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
+                    Class<?> valueType = (Class<?>)parameterizedType.getActualTypeArguments()[1];
+                    log.debug("keyType  : " + keyType);
+                    log.debug("valueType: " + valueType);
+                    jsonResult.entrySet().stream().forEach(
+                            e -> {
+                                Object key = cast(e.getKey(), keyType);
+                                Object value = cast(e.getValue(), valueType);
+                                resultMap.put(key, value);
+                            }
+                    );
+                }
+                return resultMap;
+            }
+            JSONObject jsonrResult = (JSONObject) rpcResponse.getResult();
+            return jsonrResult.toJavaObject(returnType);
+        } else if (result instanceof JSONArray jsonArray) {
+            Object[] array = jsonArray.toArray();
+            if (returnType.isArray()) {
+                Class<?> componentType = returnType.getComponentType();
+                Object resultArray = Array.newInstance(componentType, array.length);
+                for (int i = 0; i < array.length; i++) {
+                    if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                        Array.set(resultArray, i, array[i]);
+                    } else {
+                        Object castObject = cast(array[i], componentType);
+                        Array.set(resultArray, i, castObject);
+                    }
+                }
+                return resultArray;
+            } else if (List.class.isAssignableFrom(returnType)) {
+                List<Object> resultList = new ArrayList<>(array.length);
+                Type genericReturnType = method.getGenericReturnType();
+                log.debug(genericReturnType.toString());
+                if (genericReturnType instanceof ParameterizedType parameterizedType) {
+                    Type actualType = parameterizedType.getActualTypeArguments()[0];
+                    log.debug(actualType.toString());
+                    for (Object o : array) {
+                        resultList.add(cast(o, (Class<?>) actualType));
+                    }
+                } else {
+                    resultList.addAll(Arrays.asList(array));
+                }
+                return resultList;
+            } else {
+                return null;
+            }
+        }else{
+            return cast(result, returnType);
+        }
     }
 }

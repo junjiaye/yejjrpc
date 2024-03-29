@@ -1,6 +1,7 @@
 package cn.yejj.yejjrpc.demo.api;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: yejjr
@@ -8,26 +9,37 @@ import java.util.List;
  * @description:
  */
 public interface UserService {
+
     User findById(int id);
 
-    String findStrById();
-
-    Integer findIntgerById(Integer i);
+    User findById(int id, String name);
 
     long getId(long id);
 
-    int getId(User user);
+    long getId(User user);
 
-    int getId(User user,int i);
-    int getId(int[] ins);
-
-    int getId(List<Integer> list);
-
-
-    int[] getId();
+    long getId(float id);
 
     String getName();
 
-    String getName(int i);
+    String getName(int id);
+
+    int[] getIds();
+    long[] getLongIds();
+    int[] getIds(int[] ids);
+
+    User[] findUsers(User[] users);
+
+    List<User> getList(List<User> userList);
+
+    Map<String, User> getMap(Map<String, User> userMap);
+
+    Boolean getFlag(boolean flag);
+
+    User findById(long id);
+
+    User ex(boolean flag);
+
+    User find(int timeout);
 
 }
