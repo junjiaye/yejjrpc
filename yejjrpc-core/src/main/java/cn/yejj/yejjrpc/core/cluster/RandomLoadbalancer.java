@@ -1,6 +1,6 @@
 package cn.yejj.yejjrpc.core.cluster;
 
-import cn.yejj.yejjrpc.core.api.LoaderBalacer;
+import cn.yejj.yejjrpc.core.api.LoaderBalancer;
 
 import java.util.List;
 import java.util.Random;
@@ -12,7 +12,7 @@ import java.util.Random;
  * @author: yejj
  * @create: 2024-03-20 13:51
  */
-public class RandomLoadbalancer<T> implements LoaderBalacer<T> {
+public class RandomLoadbalancer<T> implements LoaderBalancer<T> {
 
     Random random = new Random();
 

@@ -1,5 +1,6 @@
 package cn.yejj.yejjrpc.core.api;
 
+import cn.yejj.yejjrpc.core.exception.RpcException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,6 @@ import lombok.NoArgsConstructor;
 public class RpcResponse {
     boolean status;
     Object result;
-    Exception ex;
+    RpcException ex;
 
 }

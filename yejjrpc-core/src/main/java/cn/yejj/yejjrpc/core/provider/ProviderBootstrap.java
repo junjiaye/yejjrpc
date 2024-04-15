@@ -2,6 +2,8 @@ package cn.yejj.yejjrpc.core.provider;
 
 import cn.yejj.yejjrpc.core.annotation.YejjProvider;
 import cn.yejj.yejjrpc.core.api.RegistryCenter;
+import cn.yejj.yejjrpc.core.config.AppConfigProperties;
+import cn.yejj.yejjrpc.core.config.ProviderConfigProperties;
 import cn.yejj.yejjrpc.core.mate.InstanceMata;
 import cn.yejj.yejjrpc.core.mate.ProviderMata;
 import cn.yejj.yejjrpc.core.mate.ServiceMeta;
@@ -34,35 +36,40 @@ public class ProviderBootstrap implements ApplicationContextAware {
     //字段set方法，相当于实现了接口的set....方法
     ApplicationContext applicationContext;
 
+    //实例对象
     private InstanceMata instance;
     RegistryCenter registry;
-
+    //服务对象
     ServiceMeta serviceMeta;
 
-    @Value("${server.port}")
     private String port;
-    @Value("${app.env}")
-    private String env;
-    @Value("${app.namespace}")
-    private String namespace;
-    @Value("${app.id}")
-    private String app;
+    private AppConfigProperties appProperties;
+    private ProviderConfigProperties providerProperties;
     //MultiValueMap:spring提供的，key可以重复，可以用来存储类似爱好:篮球，爱好：看书 这样的结构，表示我的爱好是看书和篮球
     private MultiValueMap<String, ProviderMata> skeletonMap = new LinkedMultiValueMap<>();
+    public ProviderBootstrap(String port, AppConfigProperties appProperties,
+                             ProviderConfigProperties providerProperties) {
+        this.port = port;
+        this.appProperties = appProperties;
+        this.providerProperties = providerProperties;
+    }
 
     @PostConstruct  //bean创建后。未初始化之前执行 相当于init-method 对应的销毁方法是@PreDestroy
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(YejjProvider.class);
         registry = applicationContext.getBean(RegistryCenter.class);
-        providers.forEach((k, v) -> log.info("provider: " + k));
+        //providers.forEach((k, v) -> log.info("provider: " + k));
         providers.values().forEach(this::genInterface);
     }
 
     @SneakyThrows
     public void start() {
+        //获取启动服务的ip port信息
         String ip = InetAddress.getLocalHost().getHostAddress();
-        instance = InstanceMata.http(ip,Integer.valueOf(port));
+        //设置实例信息
+        instance = InstanceMata.http(ip,Integer.valueOf(port)).addParams(providerProperties.getMetas());
         registry.start();
+        //将实例注册到zk上
         skeletonMap.keySet().forEach(this::registService);
     }
 
@@ -76,13 +83,13 @@ public class ProviderBootstrap implements ApplicationContextAware {
     private void unRegisterService(String service) {
         RegistryCenter registry = applicationContext.getBean(RegistryCenter.class);
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app).namespace(namespace).env(env).name(service).build();
+                .app(appProperties.getId()).namespace(appProperties.getNamespace()).env(appProperties.getEnv()).name(service).build();
         registry.unRegister(serviceMeta,instance);
     }
 
     private void registService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app).namespace(namespace).env(env).name(service).build();
+                .app(appProperties.getId()).namespace(appProperties.getNamespace()).env(appProperties.getEnv()).name(service).build();
         registry.register(serviceMeta,instance);
     }
 

@@ -10,10 +10,10 @@ import java.util.List;
  * @author: yejj
  * @create: 2024-03-19 20:44
  */
-public interface LoaderBalacer<T> {
+public interface LoaderBalancer<T> {
 
     T choose(List<T> providers);
 
-    LoaderBalacer Defaut = p -> (p == null || p.size() == 0) ? null : p.get(0);
+    LoaderBalancer Defaut = p -> (p == null || p.size() == 0) ? null : p.get(0);
 
 }

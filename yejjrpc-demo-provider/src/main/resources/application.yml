@@ -1,12 +1,33 @@
 server:
   port: 8081
-yejjrpc:
-  zkServer: 119.3.171.141:2181
-  zkRoot: yejjrpc
 app:
-  id: app1
-  namespace: public
-  env: dev
+  id: yejjrpc
+apollo:
+  cacheDir: D:\study\yejjrpc\yejjrpc
+  cluster: default
+  meta: http://119.3.171.141:8080
+  autoUpdateInjectedSpringProperties: true
+  bootstrap:
+    enabled: true
+    namespaces: yejjrpc
+    eagerLoad:
+      enabled: false
+yejjrpc:
+  zk:
+    zkServer: 119.3.171.141:2181
+    zkRoot: yejjrpc
+  app:
+    id: app1
+    namespace: public
+    env: dev
+  provider:
+    metas:
+      gray: false  #是否灰度
+      dc: bj #机房
+      unit: B001 #单元
+      tc: 25
+
+
 logging:
   level:
     root: info

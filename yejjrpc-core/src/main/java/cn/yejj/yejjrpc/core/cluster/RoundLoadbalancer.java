@@ -1,6 +1,6 @@
 package cn.yejj.yejjrpc.core.cluster;
 
-import cn.yejj.yejjrpc.core.api.LoaderBalacer;
+import cn.yejj.yejjrpc.core.api.LoaderBalancer;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author: yejj
  * @create: 2024-03-20 14:08
  */
-public class RoundLoadbalancer<T> implements LoaderBalacer<T> {
+public class RoundLoadbalancer<T> implements LoaderBalancer<T> {
     AtomicInteger index = new AtomicInteger(0);
     @Override
     public T choose(List<T> providers) {

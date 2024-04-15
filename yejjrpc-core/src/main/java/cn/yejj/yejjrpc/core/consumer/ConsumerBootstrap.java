@@ -27,36 +27,18 @@ import java.util.Map;
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
     ApplicationContext applicationContext;
     Environment environment;
-    @Value("${app.id}")
-    private String app;
 
-    @Value("${app.namespace}")
-    private String namespace;
-
-    @Value("${app.env}")
-    private String env;
-    @Value("${app.retrys}")
-    private String retrys;
-    @Value("${app.timeout}")
-    private String timeout;
     private Map<String, Object> stubMap = new HashMap<>();
 
     public void start() {
 
-        Router router = applicationContext.getBean(Router.class);
-        LoaderBalacer loaderBalacer = applicationContext.getBean(LoaderBalacer.class);
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
-        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
-        RpcContext rpcContext = new RpcContext();
-        rpcContext.setLoaderBalacer(loaderBalacer);
-        rpcContext.setRouter(router);
-        rpcContext.setFilters(filters);
-        rpcContext.getParameters().put("retrys",retrys);
-        rpcContext.getParameters().put("timeout",timeout);
+        //路由，负载均衡，过滤器配置信息
+        RpcContext rpcContext = applicationContext.getBean(RpcContext.class);
         //String[] providers = urls.split(",");
         //获取spring中所有bean的名称
         String[] beanNames = applicationContext.getBeanDefinitionNames();
-        //加了YejjConsumer注解的对象，创建动态代理类
+        //扫描加了YejjConsumer注解的远程服务对象，创建动态代理类
         for (String beanName : beanNames) {
             Object bean = applicationContext.getBean(beanName);
             List<Field> fields = MethodUtils.findAnnotatedField(bean.getClass(),YejjConsumer.class);
@@ -72,6 +54,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                                 //createConsumer(type,rpcContext,List.of(providers));
                     }
                     field.setAccessible(true);
+                    //替换bean对象信息
                     field.set(bean, consumer);
                 } catch (Exception e) {
                     //TODO 异常处理
@@ -83,7 +66,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 
     private Object createConsumerFromRc(Class<?> service, RpcContext rpcContext, RegistryCenter rc) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app).namespace(namespace).env(env).name(service.getCanonicalName()).build();
+                .app(rpcContext.param("app.id")).namespace(rpcContext.param("app.namespace")).env(rpcContext.param("app.env")).name(service.getCanonicalName()).build();
         List<InstanceMata> providers = rc.fetchAll(serviceMeta);
         rc.subscribe(serviceMeta, event -> {
             providers.clear();

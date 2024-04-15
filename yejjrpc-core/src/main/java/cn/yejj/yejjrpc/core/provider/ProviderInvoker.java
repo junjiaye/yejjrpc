@@ -1,5 +1,6 @@
 package cn.yejj.yejjrpc.core.provider;
 
+import cn.yejj.yejjrpc.core.api.RpcContext;
 import cn.yejj.yejjrpc.core.api.RpcRequest;
 import cn.yejj.yejjrpc.core.api.RpcResponse;
 import cn.yejj.yejjrpc.core.exception.RpcExceptionEnum;
@@ -28,6 +29,10 @@ public class ProviderInvoker {
     }
 
     public RpcResponse invokeRequest(RpcRequest request) {
+
+        if (!request.getParams().isEmpty()){
+            request.getParams().forEach(RpcContext::setContextParameter);
+        }
         RpcResponse rpcResponse = new RpcResponse();
         List<ProviderMata> providerMates = skeletonMap.get(request.getService());
         try {

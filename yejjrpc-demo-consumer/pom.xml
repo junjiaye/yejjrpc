@@ -3,19 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>cn.yejj</groupId>
+        <groupId>io.github.junjiaye</groupId>
         <artifactId>yejjrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
-    <groupId>cn.yejj</groupId>
+    <groupId>io.github.junjiaye</groupId>
     <artifactId>yejjrpc-demo-consumer</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>yejjrpc-demo-consumer</name>
     <description>yejjrpc-demo-consumer</description>
-    <properties>
-        <java.version>17</java.version>
-    </properties>
+
 
     <dependencyManagement>
         <dependencies>
@@ -30,19 +28,28 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>cn.yejj</groupId>
-            <artifactId>yejjrpc-demo-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>io.github.junjiaye</groupId>
+            <artifactId>yejjrpc-core</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>cn.yejj</groupId>
+            <groupId>io.github.junjiaye</groupId>
+            <artifactId>yejjrpc-demo-provider</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.junjiaye</groupId>
+            <artifactId>yejjrpc-demo-api</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.junjiaye</groupId>
             <artifactId>yejjrpc-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-
         </dependency>
 
         <dependency>
@@ -54,7 +61,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -70,6 +76,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+<!--                    <classifier>booty</classifier>-->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -84,6 +91,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit-platform</artifactId>
+                        <version>3.2.3</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

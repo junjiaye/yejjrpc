@@ -3,14 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>cn.yejj</groupId>
+        <groupId>io.github.junjiaye</groupId>
         <artifactId>yejjrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
-    <groupId>cn.yejj</groupId>
+    <groupId>io.github.junjiaye</groupId>
     <artifactId>yejjrpc-demo-provider</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>yejjrpc-demo-provider</name>
     <description>yejjrpc-demo-provider</description>
     <properties>
@@ -18,14 +18,14 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>cn.yejj</groupId>
+            <groupId>io.github.junjiaye</groupId>
             <artifactId>yejjrpc-demo-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>cn.yejj</groupId>
+            <groupId>io.github.junjiaye</groupId>
             <artifactId>yejjrpc-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -33,7 +33,13 @@
             <version>${spring.boot.version}</version>
 
         </dependency>
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-mockserver</artifactId>
+            <version>2.2.0</version>
+            <scope>test</scope>
 
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -65,6 +71,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <classifier>booty</classifier>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

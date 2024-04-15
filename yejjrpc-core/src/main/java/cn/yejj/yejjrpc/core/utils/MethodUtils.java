@@ -44,14 +44,15 @@ public class MethodUtils {
      */
     public static List<Field> findAnnotatedField(Class<?> clazz,Class<? extends Annotation> annotationClass) {
         List<Field> result = new ArrayList<>();
-        while (clazz != null){
+        while (clazz != null) {
             Field[] fields = clazz.getDeclaredFields();
+            Arrays.stream(fields).filter(field -> field.isAnnotationPresent(annotationClass)).forEach(result::add);
             //TODO 改成Stream
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(annotationClass)) {
-                    result.add(field);
-                }
-            }
+//            for (Field field : fields) {
+//                if (field.isAnnotationPresent(annotationClass)) {
+//                    result.add(field);
+//                }
+//            }
             clazz = clazz.getSuperclass();
         }
 

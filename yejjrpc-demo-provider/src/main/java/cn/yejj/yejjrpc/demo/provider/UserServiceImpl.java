@@ -1,6 +1,7 @@
 package cn.yejj.yejjrpc.demo.provider;
 
 import cn.yejj.yejjrpc.core.annotation.YejjProvider;
+import cn.yejj.yejjrpc.core.api.RpcContext;
 import cn.yejj.yejjrpc.demo.api.Parent;
 import cn.yejj.yejjrpc.demo.api.User;
 import cn.yejj.yejjrpc.demo.api.UserService;
@@ -120,5 +121,11 @@ public class UserServiceImpl implements UserService {
         }
         return new User(1001, "YeJJ1001-" + port);
     }
-
+    @Override
+    public String echoParameter(String key) {
+        System.out.println(" ====>> RpcContext.ContextParameters: ");
+        RpcContext.ContextParameters.get().forEach((k, v)-> System.out.println(k+" -> " +v));
+        String contextParameter = RpcContext.getContextParameter(key);
+        return contextParameter;
+    }
 }

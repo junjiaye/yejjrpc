@@ -5,6 +5,7 @@ import cn.yejj.yejjrpc.core.exception.RpcExceptionEnum;
 import cn.yejj.yejjrpc.core.exception.RpcException;
 import cn.yejj.yejjrpc.core.mate.InstanceMata;
 import cn.yejj.yejjrpc.core.mate.ServiceMeta;
+import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
@@ -15,6 +16,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +33,9 @@ public class ZkRegistryCenter implements RegistryCenter {
     private CuratorFramework client = null;
     private TreeCache cache = null;
 
-    @Value("${yejjrpc.zkServer}")
+    @Value("${yejjrpc.zk.zkServer}")
     private String zkServer;
-    @Value("${yejjrpc.zkRoot}")
+    @Value("${yejjrpc.zk.zkRoot}")
     private String zkRoot;
 
 
@@ -66,7 +68,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             String instancePath = servicePath + "/" +instance.toPath();
             log.info(" ===> register to zk: " + instancePath);
 
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath,"provider".getBytes());
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath,instance.toMeta().getBytes());
         }catch (Exception ex){
             throw new RpcException(ex, RpcExceptionEnum.UNKNOWN_EX);
         }
@@ -91,20 +93,30 @@ public class ZkRegistryCenter implements RegistryCenter {
 
     @Override
     public List<InstanceMata> fetchAll(ServiceMeta service) {
-        String servicePath = "/" +service.toPath();;
+        String servicePath = "/" +service.toPath();
         try {
             List<String> nodes = client.getChildren().forPath(servicePath);
             nodes.stream().forEach(System.out::println);
-            return mapInstances(nodes);
+            return mapInstances(servicePath,nodes);
         }catch (Exception ex){
             throw new RpcException(ex, RpcExceptionEnum.UNKNOWN_EX);
         }
     }
 
-    private List<InstanceMata> mapInstances(List<String> nodes) {
+    private List<InstanceMata> mapInstances(String servicePath,List<String> nodes) {
         return nodes.stream().map( str ->{
             String[] strs = str.split("_");
-            return InstanceMata.http(strs[0],Integer.valueOf(strs[1]));
+            InstanceMata instance = InstanceMata.http(strs[0], Integer.valueOf(strs[1]));
+            String nodePath = servicePath + "/" + str;
+            byte[] bytes;
+            try {
+                bytes = client.getData().forPath(nodePath);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            instance.setParameters((JSON.parseObject(new String(bytes), HashMap.class)));
+            instance.getParameters().forEach((k,v) -> System.out.println( k + "---->" +v));
+            return instance;
         }).collect(Collectors.toList());
     }
 

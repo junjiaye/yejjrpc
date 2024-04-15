@@ -30,16 +30,28 @@ class YejjrpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         context1 = SpringApplication.run(YejjrpcDemoProviderApplication.class,
-                "--server.port=8094", "--yejjrpc.zkServer=localhost:2182",
-                "--logging.level.cn.yejj.yejjrpc=info");
+                "--server.port=8094",
+                "--kkrpc.zk.server=localhost:2182",
+                "--kkrpc.app.env=test",
+                "--logging.level.cn.kimmking.kkrpc=info",
+                "--kkrpc.provider.metas.dc=bj",
+                "--kkrpc.provider.metas.gray=false",
+                "--kkrpc.provider.metas.unit=B001"
+        );
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8095    ========== ");
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
-        context2 = SpringApplication.run(YejjrpcDemoConsumerApplication.class,
-                "--server.port=8095", "--yejjrpc.zkServer=localhost:2182",
-                "--logging.level.cn.yejj.yejjrpc=info");
+        context2 = SpringApplication.run(YejjrpcDemoProviderApplication.class,
+                "--server.port=8095",
+                "--kkrpc.zk.server=localhost:2182",
+                "--kkrpc.app.env=test",
+                "--logging.level.cn.kimmking.kkrpc=info",
+                "--kkrpc.provider.metas.dc=bj",
+                "--kkrpc.provider.metas.gray=false",
+                "--kkrpc.provider.metas.unit=B002"
+        );
     }
 
     @Test
@@ -53,5 +65,4 @@ class YejjrpcDemoConsumerApplicationTests {
         SpringApplication.exit(context2, () -> 1);
         zkServer.stop();
     }
-
 }
